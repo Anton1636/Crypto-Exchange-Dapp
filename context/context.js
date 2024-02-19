@@ -28,7 +28,7 @@ import { shortAddress, parseErrorMsg } from '../utils/index'
 export const CONTEXT = React.createContext()
 
 export const PROVIDER = ({ children }) => {
-	const CRYPTO_EXCHANGE = 'Crypto Exchange Dapp'
+	const TOKEN_SWAP = 'Crypto Exchange Dapp'
 	const [loader, setLoader] = useState(false)
 	const [address, setAddress] = useState('')
 	const [chainId, setChainId] = useState('')
