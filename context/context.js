@@ -145,16 +145,19 @@ export const PROVIDER = ({ children }) => {
 	const RECIPIENT = '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B'
 
 	const swap = async (token_1, token_2, swapInputAmount) => {
+		setLoader(true)
 		try {
+			if (!token_1 || token_2 || !swapInputAmount) {
+				notifyError('Please provide all the details for swap.')
+			}
 			console.log('Calling')
-			const _inputAmount = 1
-			const provider = web3Provider()
+			const provider = await web3Provider()
+			const signer = provider.getSigner()
+			const userAddress = await signer.getAddress()
+			const ETHER = Ether.onChain(token_1.chainId)
 
-			const network = await provider.getNetwork()
-			const ETHER = Ether.onChain(1)
-
-			const tokenAddress1 = await CONNECTING_CONTRACT('')
-			const tokenAddress2 = await CONNECTING_CONTRACT('')
+			const tokenAddress1 = await CONNECTING_CONTRACT(token_1.address)
+			const tokenAddress2 = await CONNECTING_CONTRACT(token_2.address)
 
 			const TOKEN_A = new Token(
 				tokenAddress1.chainId,
@@ -172,10 +175,17 @@ export const PROVIDER = ({ children }) => {
 				tokenAddress1.name
 			)
 
-			const inputEther = ethers.utils.parseEther('1').toString()
+			const WETH_USDC_V3 = await getPool(
+				TOKEN_A,
+				TOKEN_B,
+				FeeAmount.MEDIUM,
+				provider
+			)
+
+			const inputEther = ethers.utils.parseEther(swapInputAmount).toString()
 			const trade = await V3Trade.fromRoute(
 				new RouteV3([WETH_USDC_V3], ETHER, TOKEN_B),
-				CurrencyAmount.fromRawAmount(Ether, inputEther),
+				CurrencyAmount.fromRawAmount(ETHER, inputEther),
 				TradeType.EXACT_INPUT
 			)
 
@@ -193,7 +203,7 @@ export const PROVIDER = ({ children }) => {
 			let tokenA
 			let tokenB
 
-			ethBalance = await provider.getBalance(RECIPIENT)
+			ethBalance = await provider.getBalance(userAddress)
 			tokenA = await tokenAddress1.balance
 			tokenB = await tokenAddress2.balance
 			console.log('Before')
@@ -201,11 +211,11 @@ export const PROVIDER = ({ children }) => {
 			console.log('tokenA: ', tokenA)
 			console.log('tokenB', tokenB)
 
-			const tx = await Signer.sendTransaction({
+			const tx = await signer.sendTransaction({
 				data: params.calldata,
-				to: '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B',
+				to: userAddress,
 				value: params.value,
-				from: RECIPIENT,
+				from: userAddress,
 			})
 
 			console.log('Calling')
@@ -214,12 +224,14 @@ export const PROVIDER = ({ children }) => {
 			console.log('Success')
 			console.log('Status', receipt.status)
 
-			ethBalance = await provider.getBalance(RECIPIENT)
+			ethBalance = await provider.getBalance(userAddress)
 			tokenA = await tokenAddress1.balance
 			tokenB = await tokenAddress2.balance
 			console.log('After')
 
 			console.log('Eth Balance:', ethers.utils.formatUnits(ethBalance, 18))
+			notifySuccess(`Token A: ${tokenA}, Token B: ${tokenB}`)
+			setLoader(false)
 			console.log('tokenA: ', tokenA)
 			console.log('tokenB', tokenB)
 		} catch (e) {

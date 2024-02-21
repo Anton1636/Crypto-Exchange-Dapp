@@ -9,6 +9,7 @@ import Security from './Security'
 import Statistics from './Statistics'
 import Testomonial from './Testomonial'
 import Token from './Token'
+import Loader from './Loader'
 
 export {
 	Header,
@@ -22,4 +23,5 @@ export {
 	Statistics,
 	Testomonial,
 	Token,
+	Loader,
 }

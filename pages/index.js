@@ -11,6 +11,7 @@ import {
 	Statistics,
 	Testomonial,
 	Token,
+	Loader,
 } from '../components/index'
 import { CONTEXT } from '../context/context'
 
@@ -43,10 +44,13 @@ const index = () => {
 			<Hero
 				setInputAmount={setInputAmount}
 				setLoader={setLoader}
-				setOutputAmount={setOpenToken}
+				setOpenToken={setOpenToken}
 				LOAD_TOKEN={LOAD_TOKEN}
 				token_1={token_1}
 				token_2={token_2}
+				inputAmount={inputAmount}
+				setToken_1={setToken_1}
+				setToken_2={setToken_2}
 				swap={swap}
 			/>
 			<Feature />
@@ -67,6 +71,12 @@ const index = () => {
 						token_1={token_1}
 						token_2={token_2}
 					/>
+				</div>
+			)}
+
+			{loader && (
+				<div className='new_loader'>
+					<Loader />
 				</div>
 			)}
 		</div>

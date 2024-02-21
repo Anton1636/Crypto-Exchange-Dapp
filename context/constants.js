@@ -31,10 +31,9 @@ export const CONNECTING_CONTRACT = async ADDRESS => {
 		const signer = provider.getSigner()
 		const contract = fetchTokenContract(signer, ADDRESS)
 
-		//User address
-		// const userAddress = await signer.getAddress()
+		const userAddress = await signer.getAddress()
 
-		const balance = await contract.balanceOf(TEST_ACCOUNT)
+		const balance = await contract.balanceOf(userAddress)
 		const name = await contract.name()
 		const symbol = await contract.symbol()
 		const supply = contract.totalSupply()
